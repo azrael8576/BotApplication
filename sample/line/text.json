@@ -1,0 +1,19 @@
+{
+  "events": [
+    {
+      "type": "message",
+      "replyToken": "58cd4a7ad5f640fb90cce0cef4d10966",
+      "source": {
+        "userId": "U8fa77f6aad3ffa58326b4ba97bd60f54",
+        "type": "user"
+      },
+      "timestamp": 1564080875486,
+      "message": {
+        "type": "text",
+        "id": "10277141811096",
+        "text": "Test"
+      }
+    }
+  ],
+  "destination": "Uba0fd4ecaaa59d58938c78bd3e5b2210"
+}

@@ -1,0 +1,21 @@
+{
+  "events": [
+    {
+      "type": "message",
+      "replyToken": "aee0165110394462a923c32c98cf8dc9",
+      "source": {
+        "userId": "U8fa77f6aad3ffa58326b4ba97bd60f54",
+        "type": "user"
+      },
+      "timestamp": 1564082169602,
+      "message": {
+        "type": "location",
+        "id": "10277190502762",
+        "address": "112台灣台北市北投區吉利街314巷5號",
+        "latitude": 25.11764459932076,
+        "longitude": 121.5112602528166
+      }
+    }
+  ],
+  "destination": "Uba0fd4ecaaa59d58938c78bd3e5b2210"
+}

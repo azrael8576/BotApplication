@@ -1,0 +1,22 @@
+{
+  "events": [
+    {
+      "type": "message",
+      "replyToken": "a0390d1255ff43ed925a4511f0fd7a3a",
+      "source": {
+        "userId": "U8fa77f6aad3ffa58326b4ba97bd60f54",
+        "type": "user"
+      },
+      "timestamp": 1564081408183,
+      "message": {
+        "type": "video",
+        "id": "10277162133161",
+        "contentProvider": {
+          "type": "line"
+        },
+        "duration": 2035
+      }
+    }
+  ],
+  "destination": "Uba0fd4ecaaa59d58938c78bd3e5b2210"
+}

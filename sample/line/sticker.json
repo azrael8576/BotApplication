@@ -1,0 +1,20 @@
+{
+  "events": [
+    {
+      "type": "message",
+      "replyToken": "63a673abe9c94a4db34ac8a7cc547e45",
+      "source": {
+        "userId": "U8fa77f6aad3ffa58326b4ba97bd60f54",
+        "type": "user"
+      },
+      "timestamp": 1564081456629,
+      "message": {
+        "type": "sticker",
+        "id": "10277163966218",
+        "stickerId": "219883",
+        "packageId": "2000010"
+      }
+    }
+  ],
+  "destination": "Uba0fd4ecaaa59d58938c78bd3e5b2210"
+}

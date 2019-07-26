@@ -1,0 +1,23 @@
+{
+  "events": [
+    {
+      "type": "message",
+      "replyToken": "28502d8007a84da59c4a0ea99c2af825",
+      "source": {
+        "userId": "U8fa77f6aad3ffa58326b4ba97bd60f54",
+        "type": "user"
+      },
+      "timestamp": 1564082632617,
+      "message": {
+        "type": "file",
+        "id": "10277207326504",
+        "contentProvider": {
+          "type": "line"
+        },
+        "fileName": "Presentation.key",
+        "fileSize": 272217
+      }
+    }
+  ],
+  "destination": "Uba0fd4ecaaa59d58938c78bd3e5b2210"
+}

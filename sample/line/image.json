@@ -1,0 +1,21 @@
+{
+  "events": [
+    {
+      "type": "message",
+      "replyToken": "802d03b6be8d4f978d9a719fcb085021",
+      "source": {
+        "userId": "U8fa77f6aad3ffa58326b4ba97bd60f54",
+        "type": "user"
+      },
+      "timestamp": 1564081334758,
+      "message": {
+        "type": "image",
+        "id": "10277159336090",
+        "contentProvider": {
+          "type": "line"
+        }
+      }
+    }
+  ],
+  "destination": "Uba0fd4ecaaa59d58938c78bd3e5b2210"
+}
