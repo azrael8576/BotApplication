@@ -44,7 +44,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
 
-    implementation("com.linecorp.bot:line-bot-cli:2.7.0")
+//    implementation("com.linecorp.bot:line-bot-cli:2.7.0")
     implementation("com.linecorp.bot:line-bot-spring-boot:2.7.0")
     implementation("com.linecorp.bot:line-bot-servlet:2.7.0")
     implementation("com.linecorp.bot:line-bot-model:2.7.0")
