@@ -2,14 +2,12 @@ package cc.tapgo
 
 
 import java.io.IOException
-import java.io.OutputStream
 import java.io.UncheckedIOException
 import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.LocalDateTime
 import java.util.concurrent.ExecutionException
-import java.util.function.Consumer
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
@@ -22,35 +20,16 @@ import com.linecorp.bot.client.LineMessagingClient
 import com.linecorp.bot.client.MessageContentResponse
 import com.linecorp.bot.model.ReplyMessage
 import com.linecorp.bot.model.action.*
-import com.linecorp.bot.model.event.BeaconEvent
 import com.linecorp.bot.model.event.Event
 import com.linecorp.bot.model.event.FollowEvent
 import com.linecorp.bot.model.event.JoinEvent
-import com.linecorp.bot.model.event.MemberJoinedEvent
-import com.linecorp.bot.model.event.MemberLeftEvent
 import com.linecorp.bot.model.event.MessageEvent
 import com.linecorp.bot.model.event.PostbackEvent
 import com.linecorp.bot.model.event.UnfollowEvent
-import com.linecorp.bot.model.event.message.AudioMessageContent
-import com.linecorp.bot.model.event.message.ContentProvider
-import com.linecorp.bot.model.event.message.FileMessageContent
-import com.linecorp.bot.model.event.message.ImageMessageContent
-import com.linecorp.bot.model.event.message.LocationMessageContent
-import com.linecorp.bot.model.event.message.StickerMessageContent
-import com.linecorp.bot.model.event.message.TextMessageContent
-import com.linecorp.bot.model.event.message.VideoMessageContent
+import com.linecorp.bot.model.event.message.*
 import com.linecorp.bot.model.event.source.GroupSource
 import com.linecorp.bot.model.event.source.RoomSource
-import com.linecorp.bot.model.event.source.Source
-import com.linecorp.bot.model.message.AudioMessage
-import com.linecorp.bot.model.message.ImageMessage
-import com.linecorp.bot.model.message.ImagemapMessage
-import com.linecorp.bot.model.message.LocationMessage
-import com.linecorp.bot.model.message.Message
-import com.linecorp.bot.model.message.StickerMessage
-import com.linecorp.bot.model.message.TemplateMessage
-import com.linecorp.bot.model.message.TextMessage
-import com.linecorp.bot.model.message.VideoMessage
+import com.linecorp.bot.model.message.*
 import com.linecorp.bot.model.message.imagemap.*
 import com.linecorp.bot.model.message.template.ButtonsTemplate
 import com.linecorp.bot.model.message.template.CarouselColumn
@@ -58,7 +37,6 @@ import com.linecorp.bot.model.message.template.CarouselTemplate
 import com.linecorp.bot.model.message.template.ConfirmTemplate
 import com.linecorp.bot.model.message.template.ImageCarouselColumn
 import com.linecorp.bot.model.message.template.ImageCarouselTemplate
-import com.linecorp.bot.model.response.BotApiResponse
 import com.linecorp.bot.spring.boot.annotation.EventMapping
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler
 import java.util.*
@@ -130,22 +108,23 @@ class EventHandler {
             )
         )
     }
-    //    @EventMapping
-//    @Throws(IOException::class)
-//    fun handleImageMessageEvent(event: MessageEvent<ImageMessageContent>) {
-//        // You need to install ImageMagick
-//        handleHeavyContent(
-//            event.replyToken,
-//            event.message.id
-//        ) { responseBody ->
-//            val provider = event.message.contentProvider
-//            val jpg: DownloadedContent
-//            val previewImg: DownloadedContent
-//            if (provider.isExternal) {
-//                jpg = DownloadedContent(null, provider.originalContentUrl)
-//                previewImg = DownloadedContent(null, provider.previewImageUrl)
-//            } else {
-//                jpg = saveContent("jpg", responseBody)
+    @EventMapping
+    @Throws(IOException::class)
+    fun handleImageMessageEvent(event: MessageEvent<ImageMessageContent>) {
+        // You need to install ImageMagick
+        handleHeavyContent(
+            event.replyToken,
+            event.message.id
+        ) { responseBody ->
+            val provider = event.message.contentProvider
+            val jpg: DownloadedContent
+            val previewImg: DownloadedContent
+            if (provider.isExternal) {
+                jpg = DownloadedContent(null, provider.originalContentUrl)
+                previewImg = DownloadedContent(null, provider.previewImageUrl)
+            } else {
+                //TODO: // You need to install ImageMagick
+                jpg = saveContent("jpg", responseBody)
 //                previewImg = createTempFile("jpg")
 //                system(
 //                    "convert",
@@ -153,59 +132,59 @@ class EventHandler {
 //                    jpg.path.toString(),
 //                    previewImg.path.toString()
 //                )
-//            }
-//            reply(
-//                event.replyToken,
-//                ImageMessage(jpg.getUri(), previewImg.getUri())
-//            )
-//        }
-//    }
-//    @EventMapping
-//    @Throws(IOException::class)
-//    fun handleAudioMessageEvent(event: MessageEvent<AudioMessageContent>) {
-//        handleHeavyContent(
-//            event.replyToken,
-//            event.message.id
-//        ) { responseBody ->
-//            val provider = event.message.contentProvider
-//            val mp4: DownloadedContent
-//            if (provider.isExternal) {
-//                mp4 = DownloadedContent(null, provider.originalContentUrl)
-//            } else {
-//                mp4 = saveContent("mp4", responseBody)
-//            }
-//            reply(event.replyToken, AudioMessage(mp4.getUri(), 100))
-//        }
-//    }
-//    @EventMapping
-//    @Throws(IOException::class)
-//    fun handleVideoMessageEvent(event: MessageEvent<VideoMessageContent>) {
-//        // You need to install ffmpeg and ImageMagick.
-//        handleHeavyContent(
-//            event.replyToken,
-//            event.message.id
-//        ) { responseBody ->
-//            val provider = event.message.contentProvider
-//            val mp4: DownloadedContent
-//            val previewImg: DownloadedContent
-//            if (provider.isExternal) {
-//                mp4 = DownloadedContent(null, provider.originalContentUrl)
-//                previewImg = DownloadedContent(null, provider.previewImageUrl)
-//            } else {
-//                mp4 = saveContent("mp4", responseBody)
+            }
+            reply(
+                event.replyToken,
+                ImageMessage(jpg.uri, jpg.uri)
+            )
+        }
+    }
+    @EventMapping
+    @Throws(IOException::class)
+    fun handleAudioMessageEvent(event: MessageEvent<AudioMessageContent>) {
+        handleHeavyContent(
+            event.replyToken,
+            event.message.id
+        ) {
+            var provider = event.message.contentProvider
+            var mp4: DownloadedContent
+            mp4 = if (provider.isExternal) {
+                DownloadedContent(null, provider.originalContentUrl)
+            } else {
+                saveContent("mp4", it)
+            }
+            reply(event.replyToken, AudioMessage(mp4.uri, 6000))
+        }
+    }
+        @EventMapping
+    @Throws(IOException::class)
+    fun handleVideoMessageEvent(event: MessageEvent<VideoMessageContent>) {
+        // You need to install ffmpeg and ImageMagick.
+        handleHeavyContent(
+            event.replyToken,
+            event.message.id
+        ) { responseBody ->
+            val provider = event.message.contentProvider
+            val mp4: DownloadedContent
+            val previewImg: DownloadedContent
+            if (provider.isExternal) {
+                mp4 = DownloadedContent(null, provider.originalContentUrl)
+                previewImg = DownloadedContent(null, provider.previewImageUrl)
+            } else {
+                mp4 = saveContent("mp4", responseBody)
 //                previewImg = createTempFile("jpg")
 //                system(
 //                    "convert",
-//                    mp4.path + "[0]",
+//                    (mp4.path!! + "[0]").toString(),
 //                    previewImg.path.toString()
 //                )
-//            }
-//            reply(
-//                event.replyToken,
-//                VideoMessage(mp4.getUri(), previewImg.uri)
-//            )
-//        }
-//    }
+            }
+            reply(
+                event.replyToken,
+                VideoMessage(mp4.uri, mp4.uri)
+            )
+        }
+    }
     @EventMapping
     fun handleFileMessageEvent(event: MessageEvent<FileMessageContent>) {
         this.reply(
@@ -274,7 +253,7 @@ class EventHandler {
 
     private fun handleHeavyContent(
         replyToken: String, messageId: String,
-        messageConsumer: Consumer<MessageContentResponse>
+        messageConsumer: (MessageContentResponse) -> Unit
     ) {
         val response: MessageContentResponse
         try {
@@ -288,7 +267,7 @@ class EventHandler {
             throw RuntimeException(e)
         }
 
-        messageConsumer.accept(response)
+        messageConsumer(response)
     }
     private fun handleSticker(replyToken: String, content: StickerMessageContent) {
         reply(
@@ -375,7 +354,7 @@ class EventHandler {
                 this.reply(replyToken, templateMessage)
             }
             "buttons" -> {
-                val imageUrl = createUri("/static/buttons/1040.jpg")
+                val imageUrl = createUri("/static/rich/1040.jpg")
                 val buttonsTemplate = ButtonsTemplate(
                     imageUrl,
                     "My button sample",
@@ -404,7 +383,7 @@ class EventHandler {
                 this.reply(replyToken, templateMessage)
             }
             "carousel" -> {
-                val imageUrl = createUri("/static/buttons/1040.jpg")
+                val imageUrl = createUri("/static/rich/1040.jpg")
                 val carouselTemplate = CarouselTemplate(
                     Arrays.asList(
                         CarouselColumn(
@@ -476,7 +455,7 @@ class EventHandler {
                 this.reply(replyToken, templateMessage)
             }
             "image_carousel" -> {
-                val imageUrl = createUri("/static/buttons/1040.jpg")
+                val imageUrl = createUri("/static/rich/1040.jpg")
                 val imageCarouselTemplate = ImageCarouselTemplate(
                     Arrays.asList(
                         ImageCarouselColumn(
@@ -509,43 +488,45 @@ class EventHandler {
                 )
                 this.reply(replyToken, templateMessage)
             }
-            "imagemap" -> this.reply(
-                replyToken, ImagemapMessage(
-                    createUri("/static/rich"),
-                    "This is alt text",
-                    ImagemapBaseSize(1040, 1040),
-                    Arrays.asList<ImagemapAction>(
-                        URIImagemapAction(
-                            "https://store.line.me/family/manga/en",
-                            ImagemapArea(
-                                0, 0, 520, 520
-                            )
-                        ),
-                        URIImagemapAction(
-                            "https://store.line.me/family/music/en",
-                            ImagemapArea(
-                                520, 0, 520, 520
-                            )
-                        ),
-                        URIImagemapAction(
-                            "https://store.line.me/family/play/en",
-                            ImagemapArea(
-                                0, 520, 520, 520
-                            )
-                        ),
-                        MessageImagemapAction(
-                            "URANAI!",
-                            ImagemapArea(
-                                520, 520, 520, 520
+            "imagemap" -> {
+                this.reply(
+                    replyToken, ImagemapMessage(
+                        createUri("/static/rich/1040.jpg#"),
+                        "This is alt text",
+                        ImagemapBaseSize(1040, 1040),
+                        Arrays.asList<ImagemapAction>(
+                            URIImagemapAction(
+                                "https://store.line.me/family/manga/en",
+                                ImagemapArea(
+                                    0, 0, 520, 520
+                                )
+                            ),
+                            URIImagemapAction(
+                                "https://store.line.me/family/music/en",
+                                ImagemapArea(
+                                    520, 0, 520, 520
+                                )
+                            ),
+                            URIImagemapAction(
+                                "https://store.line.me/family/play/en",
+                                ImagemapArea(
+                                    0, 520, 520, 520
+                                )
+                            ),
+                            MessageImagemapAction(
+                                "URANAI!",
+                                ImagemapArea(
+                                    520, 520, 520, 520
+                                )
                             )
                         )
                     )
                 )
-            )
+            }
             "imagemap_video" -> this.reply(
                 replyToken, ImagemapMessage
                     .builder()
-                    .baseUrl(createUri("/static/imagemap_video"))
+                    .baseUrl(createUri("/static/imagemap_video/1040.jpg#"))
                     .altText("This is an imagemap with video")
                     .baseSize(ImagemapBaseSize(722, 1040))
                     .video(
@@ -579,6 +560,16 @@ class EventHandler {
             )
             "flex" -> this.reply(replyToken, ExampleFlexMessageSupplier().get())
             "quickreply" -> this.reply(replyToken, MessageWithQuickReplySupplier().get())
+            "help" -> this.replyText(replyToken, "profile\n" +
+                    "bye\n" +
+                    "confirm\n" +
+                    "buttons\n" +
+                    "carousel\n" +
+                    "image_carousel\n" +
+                    "imagemap\n" +
+                    "imagemap_video\n" +
+                    "flex\n" +
+                    "quickreply")
 //            else -> {
 //                logger.info("Returns echo message {}: {}", replyToken, text)
 //                this.replyText(
@@ -590,12 +581,13 @@ class EventHandler {
     }
 
     private fun system(vararg args: String) {
-        val processBuilder = ProcessBuilder(*args)
+        var processBuilder = ProcessBuilder(*args)
         try {
-            val start = processBuilder.start()
-            val i = start.waitFor()
+            var start = processBuilder.start()
+            var i = start.waitFor()
             logger.info("result: {} =>  {}", Arrays.toString(args), i)
         } catch (e: IOException) {
+            logger.info("IOException", e)
             throw UncheckedIOException(e)
         } catch (e: InterruptedException) {
             logger.info("Interrupted", e)
@@ -603,5 +595,5 @@ class EventHandler {
         }
     }
 
-    data class DownloadedContent (var path: Path, var uri: String)
+    data class DownloadedContent (var path: Path?, var uri: String)
 }
