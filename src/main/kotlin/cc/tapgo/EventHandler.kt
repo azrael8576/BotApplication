@@ -18,6 +18,9 @@ import com.google.common.io.ByteStreams
 
 import com.linecorp.bot.client.LineMessagingClient
 import com.linecorp.bot.client.MessageContentResponse
+import com.linecorp.bot.model.Broadcast
+import com.linecorp.bot.model.Multicast
+import com.linecorp.bot.model.PushMessage
 import com.linecorp.bot.model.ReplyMessage
 import com.linecorp.bot.model.action.*
 import com.linecorp.bot.model.event.Event
@@ -39,6 +42,7 @@ import com.linecorp.bot.model.message.template.ImageCarouselColumn
 import com.linecorp.bot.model.message.template.ImageCarouselTemplate
 import com.linecorp.bot.spring.boot.annotation.EventMapping
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler
+import org.springframework.http.HttpEntity
 import java.util.*
 
 
@@ -46,7 +50,12 @@ import java.util.*
  * Created by AlexHe on 2019-08-07.
  * Describe
  */
-
+private val TAPGO_ALEX = "U9b087fb7b7fb48606bca0604d1b6f2a6"
+private val TAPGO_MIKE = "U394fc2fbdabd1249d79accb75b7dd621"
+private val TAPGO_BOB = "Uf0dc1149924b4c0b4c20c9e307e32e5b"
+private val ALEX = "U0051e296713d9446d34a22013834ad81"
+private val 郭 = "U1b133f8afc3a1882d3a80c23bf0519e2"
+private val DEV_SHION = "U2ff4562feafef7806d120e05b627d910"
 @LineMessageHandler
 class EventHandler {
     companion object {
@@ -156,7 +165,7 @@ class EventHandler {
             reply(event.replyToken, AudioMessage(mp4.uri, 6000))
         }
     }
-        @EventMapping
+    @EventMapping
     @Throws(IOException::class)
     fun handleVideoMessageEvent(event: MessageEvent<VideoMessageContent>) {
         // You need to install ffmpeg and ImageMagick.
@@ -250,6 +259,77 @@ class EventHandler {
         }
         this.reply(replyToken, TextMessage(message))
     }
+    private fun push(userId: String, message: Message) {
+        push(userId, Collections.singletonList(message))
+    }
+    private fun push(userId: String, messages: kotlin.collections.List<Message>) {
+        try {
+            var apiResponse = lineMessagingClient!!.
+                pushMessage(PushMessage(userId, messages))!!.get()
+            logger.info("Push messages: {}", apiResponse)
+        } catch (e: InterruptedException) {
+            throw RuntimeException(e)
+        } catch (e: ExecutionException) {
+            throw RuntimeException(e)
+        }
+    }
+    private fun pushText(userId: String, message: String) {
+        var message = message
+        if (userId.isEmpty()) {
+            throw IllegalArgumentException("userId must not be empty")
+        }
+        if (message.length > 1000) {
+            message = message.substring(0, 1000 - 2) + "……"
+        }
+        this.push(userId, TextMessage(message))
+    }
+
+    private fun multicast(usersId: MutableSet<String>, message: Message) {
+        multicast(usersId, Collections.singletonList(message))
+    }
+    private fun multicast(usersId: MutableSet<String>, messages: kotlin.collections.List<Message>) {
+        try {
+            var apiResponse = lineMessagingClient!!.
+                multicast(Multicast(usersId, messages))!!.get()
+            logger.info("Multicast messages: {}", apiResponse)
+        } catch (e: InterruptedException) {
+            throw RuntimeException(e)
+        } catch (e: ExecutionException) {
+            throw RuntimeException(e)
+        }
+    }
+    private fun multicastText(usersId: MutableSet<String>, message: String) {
+        var message = message
+        if (usersId.isEmpty()) {
+            throw IllegalArgumentException("usersId must not be empty")
+        }
+        if (message.length > 1000) {
+            message = message.substring(0, 1000 - 2) + "……"
+        }
+        this.multicast(usersId, TextMessage(message))
+    }
+    private fun broadcast(message: Message, notificationDisabled: Boolean) {
+        broadcast(Collections.singletonList(message), notificationDisabled)
+    }
+    private fun broadcast(messages: kotlin.collections.List<Message>, notificationDisabled: Boolean) {
+        try {
+            var apiResponse = lineMessagingClient!!.
+                broadcast(Broadcast(messages, notificationDisabled))!!.get()
+            logger.info("Broadcast messages: {}", apiResponse)
+        } catch (e: InterruptedException) {
+            throw RuntimeException(e)
+        } catch (e: ExecutionException) {
+            throw RuntimeException(e)
+        }
+    }
+    private fun broadcastText(message: String, notificationDisabled: Boolean) {
+        var message = message
+        if (message.length > 1000) {
+            message = message.substring(0, 1000 - 2) + "……"
+        }
+        this.broadcast(TextMessage(message), notificationDisabled)
+    }
+
 
     private fun handleHeavyContent(
         replyToken: String, messageId: String,
@@ -346,7 +426,7 @@ class EventHandler {
             }
             "confirm" -> {
                 val confirmTemplate = ConfirmTemplate(
-                    "Do it?",
+                    "確認?",
                     MessageAction("Yes", "Yes!"),
                     MessageAction("No", "No!")
                 )
@@ -354,7 +434,7 @@ class EventHandler {
                 this.reply(replyToken, templateMessage)
             }
             "buttons" -> {
-                val imageUrl = createUri("/static/rich/1040.jpg")
+                val imageUrl = createUri("/static/rich/1040")
                 val buttonsTemplate = ButtonsTemplate(
                     imageUrl,
                     "My button sample",
@@ -366,16 +446,16 @@ class EventHandler {
                         ),
                         PostbackAction(
                             "Say hello1",
-                            "hello こんにちは"
+                            "hello~"
                         ),
                         PostbackAction(
-                            "言 hello2",
+                            "説 hello2",
                             "hello こんにちは",
-                            "hello こんにちは"
+                            "你好"
                         ),
                         MessageAction(
                             "Say message",
-                            "Rice=米"
+                            "Hi"
                         )
                     )
                 )
@@ -383,7 +463,7 @@ class EventHandler {
                 this.reply(replyToken, templateMessage)
             }
             "carousel" -> {
-                val imageUrl = createUri("/static/rich/1040.jpg")
+                val imageUrl = createUri("/static/rich/1040")
                 val carouselTemplate = CarouselTemplate(
                     Arrays.asList(
                         CarouselColumn(
@@ -398,25 +478,25 @@ class EventHandler {
                                 ),
                                 PostbackAction(
                                     "Say hello1",
-                                    "hello こんにちは"
+                                    "hello~"
                                 )
                             )
                         ),
                         CarouselColumn(
                             imageUrl, "hoge", "fuga", Arrays.asList<Action>(
                                 PostbackAction(
-                                    "言 hello2",
+                                    "説 hello2",
                                     "hello こんにちは",
-                                    "hello こんにちは"
+                                    "你好"
                                 ),
                                 PostbackAction(
-                                    "言 hello2",
+                                    "説 hello2",
                                     "hello こんにちは",
-                                    "hello こんにちは"
+                                    "你好"
                                 ),
                                 MessageAction(
                                     "Say message",
-                                    "Rice=米"
+                                    "Hi"
                                 )
                             )
                         ),
@@ -455,7 +535,7 @@ class EventHandler {
                 this.reply(replyToken, templateMessage)
             }
             "image_carousel" -> {
-                val imageUrl = createUri("/static/rich/1040.jpg")
+                val imageUrl = createUri("/static/rich/1040")
                 val imageCarouselTemplate = ImageCarouselTemplate(
                     Arrays.asList(
                         ImageCarouselColumn(
@@ -469,15 +549,15 @@ class EventHandler {
                             imageUrl,
                             MessageAction(
                                 "Say message",
-                                "Rice=米"
+                                "Hi"
                             )
                         ),
                         ImageCarouselColumn(
                             imageUrl,
                             PostbackAction(
-                                "言 hello2",
+                                "説 hello2",
                                 "hello こんにちは",
-                                "hello こんにちは"
+                                "你  好"
                             )
                         )
                     )
@@ -491,7 +571,7 @@ class EventHandler {
             "imagemap" -> {
                 this.reply(
                     replyToken, ImagemapMessage(
-                        createUri("/static/rich/1040.jpg#"),
+                        "https://i.imgur.com/YJ4BzB4.jpg",
                         "This is alt text",
                         ImagemapBaseSize(1040, 1040),
                         Arrays.asList<ImagemapAction>(
@@ -514,7 +594,7 @@ class EventHandler {
                                 )
                             ),
                             MessageImagemapAction(
-                                "URANAI!",
+                                "你點擊了右下角",
                                 ImagemapArea(
                                     520, 520, 520, 520
                                 )
@@ -522,11 +602,45 @@ class EventHandler {
                         )
                     )
                 )
+//                    replyToken, ImagemapMessage
+//                        .builder()
+//                        .baseUrl(createUri("/static/rich"))
+//                        .altText("This is alt text")
+//                        .baseSize(ImagemapBaseSize(1040, 1040))
+//                        .actions(
+//                            Arrays.asList<ImagemapAction>(
+//                                URIImagemapAction(
+//                                    "https://store.line.me/family/manga/en",
+//                                    ImagemapArea(
+//                                        0, 0, 520, 520
+//                                    )
+//                                ),
+//                                URIImagemapAction(
+//                                    "https://store.line.me/family/music/en",
+//                                    ImagemapArea(
+//                                        520, 0, 520, 520
+//                                    )
+//                                ),
+//                                URIImagemapAction(
+//                                    "https://store.line.me/family/play/en",
+//                                    ImagemapArea(
+//                                        0, 520, 520, 520
+//                                    )
+//                                ),
+//                                MessageImagemapAction(
+//                                    "URANAI!",
+//                                    ImagemapArea(
+//                                        520, 520, 520, 520
+//                                    )
+//                                )
+//                            )
+//                        ).build()
+//                )
             }
             "imagemap_video" -> this.reply(
                 replyToken, ImagemapMessage
                     .builder()
-                    .baseUrl(createUri("/static/imagemap_video/1040.jpg#"))
+                    .baseUrl(createUri("/static/imagemap_video"))
                     .altText("This is an imagemap with video")
                     .baseSize(ImagemapBaseSize(722, 1040))
                     .video(
@@ -569,7 +683,49 @@ class EventHandler {
                     "imagemap\n" +
                     "imagemap_video\n" +
                     "flex\n" +
-                    "quickreply")
+                    "push\n" +
+                    "multicast\n" +
+                    "broadcast\n" +
+                    "quickreply\n" +
+                    "Get_the_target_limit_for_additional_messages\n" +
+                    "Get_number_of_messages_sent_this_month\n\n" +
+                    "```------Tapgo_Bot_Api進度------```\n" +
+                    "https://gist.github.com/azrael8576/86b661864ac1d62940763945711db769")
+            "push" -> this.pushText(TAPGO_ALEX, "來自Push api")
+            "multicast" -> {
+                var usersId: MutableSet<String> = mutableSetOf()
+                usersId.add(TAPGO_ALEX)
+                usersId.add(ALEX)
+                usersId.add(郭)
+                usersId.add(DEV_SHION)
+                this.multicastText(usersId, "來自Multicast api to : TAPGO_ALEX, ALEX, 郭, DEV_SHION")
+            }
+            "broadcast" -> this.broadcastText("Test message. broadcast api", false)
+            "Get_the_target_limit_for_additional_messages" -> this.replyText(replyToken,
+                "你的目標訊息配額為: " +
+                        lineMessagingClient!!.messageQuota.get().value.toString()
+            )
+            "Get_number_of_messages_sent_this_month" -> this.replyText(replyToken,
+                "你已經發送的數量: " +
+                        lineMessagingClient!!.messageQuotaConsumption.get().totalUsage.toString()
+            )
+//            "Get_number_of_sent_reply_messages" -> this.replyText(replyToken,
+//                "已傳送reply api總數 from 2019/08/12: " +
+//                        lineMessagingClient!!.getNumberOfSentReplyMessages("20190812").
+//            )
+//            "Get_number_of_sent_push_messages" -> this.replyText(replyToken,
+//                "已傳送push api總數 from 2019/08/01: " +
+//                        lineMessagingClient!!.getNumberOfSentPushMessages("20190812").get().success.toString()
+//            )
+//            "Get_number_of_sent_multicast_messages" -> this.replyText(replyToken,
+//                "已傳送multicast api總數 from 2019/08/01: " +
+//                        lineMessagingClient!!.getNumberOfSentMulticastMessages("20190812").get().success.toString()
+//            )
+//            "Get_number_of_sent_broadcast_messages" -> this.replyText(replyToken,
+//                "已傳送broadcast api總數 from 2019/08/01: " +
+//                        lineMessagingClient!!.getNumberOfSentBroadcastMessages("20190812").get().success.toString()
+//            )
+
 //            else -> {
 //                logger.info("Returns echo message {}: {}", replyToken, text)
 //                this.replyText(

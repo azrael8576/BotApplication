@@ -27,11 +27,11 @@ import com.linecorp.bot.model.message.flex.unit.FlexMarginSize
 class ExampleFlexMessageSupplier : Supplier<FlexMessage> {
     override fun get(): FlexMessage {
         val heroBlock = Image.builder()
-            .url("https://example.com/cafe.jpg")
+            .url("https://is4-ssl.mzstatic.com/image/thumb/Purple123/v4/20/6b/70/206b7017-2bec-5b4d-c708-3557acf04a97/AppIcon-0-1x_U007emarketing-0-0-85-220-0-5.png/246x0w.jpg")
             .size(ImageSize.FULL_WIDTH)
             .aspectRatio(ImageAspectRatio.R20TO13)
             .aspectMode(ImageAspectMode.Cover)
-            .action(URIAction("label", "http://example.com", null))
+            .action(URIAction("label", "https://wds.taiwantaxi.com.tw/", null))
             .build()
 
         val bodyBlock = createBodyBlock()
@@ -51,13 +51,13 @@ class ExampleFlexMessageSupplier : Supplier<FlexMessage> {
             .builder()
             .style(ButtonStyle.LINK)
             .height(ButtonHeight.SMALL)
-            .action(URIAction("CALL", "tel:000000", null))
+            .action(URIAction("CALL", "tel:55688", null))
             .build()
         val separator = Separator.builder().build()
         val websiteAction = Button.builder()
             .style(ButtonStyle.LINK)
             .height(ButtonHeight.SMALL)
-            .action(URIAction("WEBSITE", "https://example.com", null))
+            .action(URIAction("WEBSITE", "https://wds.taiwantaxi.com.tw/", null))
             .build()
 
         return Box.builder()
@@ -69,7 +69,7 @@ class ExampleFlexMessageSupplier : Supplier<FlexMessage> {
 
     private fun createBodyBlock(): Box {
         val title = Text.builder()
-            .text("Brown Cafe")
+            .text("台灣大車隊")
             .weight(TextWeight.BOLD)
             .size(FlexFontSize.XL)
             .build()
@@ -98,7 +98,7 @@ class ExampleFlexMessageSupplier : Supplier<FlexMessage> {
                         .flex(1)
                         .build(),
                     Text.builder()
-                        .text("Shinjuku, Tokyo")
+                        .text("台灣, 台北")
                         .wrap(true)
                         .color("#666666")
                         .size(FlexFontSize.SM)
@@ -119,7 +119,7 @@ class ExampleFlexMessageSupplier : Supplier<FlexMessage> {
                         .flex(1)
                         .build(),
                     Text.builder()
-                        .text("10:00 - 23:00")
+                        .text("24hr")
                         .wrap(true)
                         .color("#666666")
                         .size(FlexFontSize.SM)
