@@ -569,6 +569,14 @@ class EventHandler {
                 this.reply(replyToken, templateMessage)
             }
             "imagemap" -> {
+                var sourceId = "NULL"
+                sourceId = if (event.source is GroupSource) {
+                    (event.source as GroupSource).groupId.toString()
+                } else if (event.source is RoomSource) {
+                    (event.source as RoomSource).roomId.toString()
+                } else {
+                    event.source.userId.toString()
+                }
                 this.reply(
                     replyToken, ImagemapMessage(
                         "https://i.imgur.com/YJ4BzB4.jpg",
@@ -576,25 +584,25 @@ class EventHandler {
                         ImagemapBaseSize(1040, 1040),
                         Arrays.asList<ImagemapAction>(
                             URIImagemapAction(
-                                "https://store.line.me/family/manga/en",
+                                "https://tapgo.cc:8553/api/line?buttonId=1&sourceId=$sourceId",
                                 ImagemapArea(
                                     0, 0, 520, 520
                                 )
                             ),
                             URIImagemapAction(
-                                "https://store.line.me/family/music/en",
+                                "https://tapgo.cc:8553/api/line?buttonId=2&sourceId=$sourceId",
                                 ImagemapArea(
                                     520, 0, 520, 520
                                 )
                             ),
                             URIImagemapAction(
-                                "https://store.line.me/family/play/en",
+                                "https://tapgo.cc:8553/api/line?buttonId=3&sourceId=$sourceId",
                                 ImagemapArea(
                                     0, 520, 520, 520
                                 )
                             ),
                             MessageImagemapAction(
-                                "你點擊了右下角",
+                                "你點了右下角",
                                 ImagemapArea(
                                     520, 520, 520, 520
                                 )
@@ -636,6 +644,20 @@ class EventHandler {
 //                            )
 //                        ).build()
 //                )
+            }
+            "clicked_count" -> {
+                this.replyText(
+                    replyToken,
+                    "----點擊率---- \n" +
+                            "manga: $btn1Count\n" +
+                            "$btn1Echo\n" +
+                            "music: $btn2Count\n" +
+                            "$btn2Echo\n" +
+                            "play: $btn3Count\n" +
+                            "$btn3Echo\n" +
+                            "---伺服器開機時間---\n" +
+                            currentPointPlus8
+                )
             }
             "imagemap_video" -> this.reply(
                 replyToken, ImagemapMessage
